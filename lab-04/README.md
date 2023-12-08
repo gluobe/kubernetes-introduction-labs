@@ -79,7 +79,7 @@ If that works you can close the port-foward connection by pressing `CTRL+c`.
 ## Task 3: Connecting to your pod
 
 To connect to your pod, you can use the following command (notice how it
-resembles the `podman container exec` command in options and functionality):
+resembles the `docker container exec` command in options and functionality):
 
 ```
 kubectl exec -ti nginx -n lab-04 -- bash
@@ -101,7 +101,7 @@ exit
 
 ## Task 4: Pod logs
 
-Again similar to when working with Podman containers, Kubernetes has a built-in
+Again similar to when working with Docker containers, Kubernetes has a built-in
 feature that exposes all stdout/stderr output into logs.  To access those logs
 issue the following command:
 
