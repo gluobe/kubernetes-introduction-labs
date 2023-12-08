@@ -17,6 +17,9 @@ Create a webserver Deployment, make sure to configure the following:
 - Service of type NodePort with port `30000`
 - Use a ConfigMap to supply the index file to the directory `/usr/share/nginx/html/`
 - Make sure the container is running rootless
+- Limit the container resources to 250Mi for memory and 100m for CPU
+
+You can find the Kubernetes documentation [here](https://kubernetes.io/docs/concepts/).
 
 Deploy the manifests to the namespace:
 ```
