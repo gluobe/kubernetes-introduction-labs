@@ -1,13 +1,8 @@
 # Lab 05 - YAML
 
-Although relatively easy in concept, this lab is a very important one when 
-working with Kubernetes.  In this lab we introduce YAML as a way to describe 
-objects in Kubernetes.  So far we only used specific `kubectl` commands to 
-create a limited set of objects.
+Although relatively easy in concept, this lab is a very important one when working with Kubernetes.  In this lab we introduce YAML as a way to describe objects in Kubernetes.  So far we only used specific `kubectl` commands to create a limited set of objects.
 
-If you are not very familiar with YAML check out the website below for a basic
-introduction and its relevance for Kubernetes:
-https://www.mirantis.com/blog/introduction-to-yaml-creating-a-kubernetes-deployment/
+If you are not very familiar with YAML check out the website below for a basic introduction and its relevance for Kubernetes: https://www.mirantis.com/blog/introduction-to-yaml-creating-a-kubernetes-deployment/
 
 ## Task 1: Creating objects using YAML
 
@@ -18,7 +13,7 @@ used YAML.  So what would this look like?
 The YAML code to replace `kubectl create namespace lab-05` looks like
 this:
 
-```
+```yaml
 apiVersion: v1
 kind: Namespace
 metadata:
@@ -44,11 +39,12 @@ kubectl get namespaces
 
 ---
 
-NAME          STATUS   AGE
-default       Active   22h
-kube-public   Active   22h
-kube-system   Active   22h
-lab-05        Active   23s
+NAME              STATUS   AGE
+default           Active   30m
+kube-node-lease   Active   30m
+kube-public       Active   30m
+kube-system       Active   30m
+lab-05            Active   10s
 ```
 
 ## Task 2: Deleting objects using YAML
@@ -90,7 +86,7 @@ namespace/lab-05 created
 
 When working with metadata your YAML to create a single pod will look like this:
 
-```
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -118,7 +114,7 @@ pod/nginx created
 Or you can omit the namespace in the metadata and provide it at the command
 line:
 
-```
+```yaml
 apiVersion: v1
 kind: Pod
 metadata:
@@ -130,6 +126,7 @@ spec:
 ```
 
 Save the above content into `lab-05-pod.yml` and apply it:
+
 ```
 kubectl apply -f lab-05-pod.yml -n lab-05
 
@@ -138,12 +135,11 @@ kubectl apply -f lab-05-pod.yml -n lab-05
 pod/nginx unchanged
 ```
 
-> NOTE: you will get the `pod/nginx` unchanged message as nothing has changed
+> NOTE: you will get the `pod/nginx unchanged` message as nothing has changed
 
 Both options have their specific use-cases.
 
-As some of you might wonder what happens when you both specify a namespace
-inside the metadata as well as on the command line, so let us give this a try:
+As some of you might wonder what happens when you both specify a namespace inside the metadata as well as on the command line, so let us give this a try:
 
 ```
 kubectl apply -f lab-05-pod-metadata-ns.yml -n default
@@ -153,8 +149,7 @@ kubectl apply -f lab-05-pod-metadata-ns.yml -n default
 error: the namespace from the provided object "lab-05" does not match the namespace "default". You must pass '--namespace=lab-05' to perform this operation.
 ```
 
-As you can see, Kubernetes will not allow you to override the namespace that is
-set in the yaml code.
+As you can see, Kubernetes will not allow you to override the namespace that is set in the yaml code.
 
 ## Task 5: Cleaning up
 

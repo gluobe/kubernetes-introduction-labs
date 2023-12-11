@@ -1,12 +1,8 @@
 # Lab 02 - Nodes
 
-A node is a worker machine in Kubernetes, previously known as a minion. A node
-may be a VM or physical machine, depending on the cluster.  A node is where your 
-application containers will run.
+A node is a worker machine in Kubernetes, previously known as a minion. A node may be a VM or physical machine, depending on the cluster. A node is where your application containers will run.
 
-Each node contains the services necessary to run pods and is managed by the 
-master components. The services on a node include the container runtime, kubelet 
-and kube-proxy.
+Each node contains the services necessary to run pods and is managed by the master components. The services on a node include the container runtime, kubelet and kube-proxy.
 
 ## Task 1: Listing nodes
 
@@ -19,7 +15,7 @@ kubectl get nodes
 ---
 
 NAME       STATUS   ROLES    AGE   VERSION
-minikube   Ready    master   77d   v1.16.0
+minikube   Ready    master   77d   v1.27.4
 ```
 
 As we are using minikube we only have a single node.  Below is the output of a
@@ -36,22 +32,20 @@ gke-kbc-steven-default-pool-b82ee1c9-6wnx   Ready     <none>    20m       v1.11.
 gke-kbc-steven-default-pool-b82ee1c9-x13z   Ready     <none>    20m       v1.11.7-gke.4
 ```
 
-We can use the `kubectl get nodes -o wide` command to get some additional
-information about the nodes:
+We can use the `kubectl get nodes -o wide` command to get some additional information about the nodes:
 
 ```
 kubectl get nodes -o wide
 
 ---
 
-NAME       STATUS   ROLES    AGE   VERSION   INTERNAL-IP   EXTERNAL-IP   OS-IMAGE            KERNEL-VERSION   CONTAINER-RUNTIME
-minikube   Ready    master   77d   v1.16.0   10.0.2.15     <none>        Buildroot 2018.05   4.15.0           docker://18.9.6
+NAME       STATUS   ROLES           AGE   VERSION   INTERNAL-IP      EXTERNAL-IP   OS-IMAGE               KERNEL-VERSION   CONTAINER-RUNTIME
+minikube   Ready    control-plane   10m   v1.27.4   192.168.59.102   <none>        Buildroot 2021.02.12   5.10.57          docker://24.0.4
 ```
 
 ## Task 2: Getting detailed node information
 
-If we want more detailed information about a node we have to use the
-`kubectl describe nodes <node_name>` command, for example:
+If we want more detailed information about a node we have to use the `kubectl describe nodes <node_name>` command, for example:
 
 ```
 kubectl describe nodes minikube
@@ -146,10 +140,6 @@ Events:
   Normal  Starting                 5m37s                  kube-proxy, minikube  Starting kube-proxy.
 ```
 
-Read through the output above to see all the information that is available about
-the node.
+Read through the output above to see all the information that is available about the node.
 
-The `kubectl describe nodes <node_name>` is a very useful tool when
-troubleshooting a node that is failing.  Going through the output (especially 
-the event section) will, in almost all cases, give a  good indication why the 
-node is not behaving as it should.
+The `kubectl describe nodes <node_name>` is a very useful tool when troubleshooting a node that is failing.  Going through the output (especially the event section) will, in almost all cases, give a  good indication why the node is not behaving as it should.

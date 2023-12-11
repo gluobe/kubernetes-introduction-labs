@@ -9,13 +9,12 @@ kubectl create ns lab-08
 
 ---
 
-namespace "lab-08" created
+namespace/lab-08 created
 ```
 
 ## Task 1: Creating a configmap
 
-With a configmap we are able to easily pass environment variables to the 
-deployment we are creating.
+With a configmap we are able to easily pass environment variables to the deployment we are creating.
 
 Create a file `container-info.env` with the following content:
 
@@ -25,8 +24,7 @@ Create a file `container-info.env` with the following content:
 IMAGE_COLOR=green
 ```
 
-This will pass an environment variable to the pods that we will create with our 
-deployment. We are now able to create a configmap with this file.
+This will pass an environment variable to the pods that we will create with our deployment. We are now able to create a configmap with this file.
 
 ```
 kubectl create configmap container-info-env --from-env-file='./container-info.env' -n lab-08
@@ -35,38 +33,41 @@ kubectl create configmap container-info-env --from-env-file='./container-info.en
 Verify that the configmap has been created succesfully:
 
 ```
-kubectl get configmap container-info-env -n lab-08
+kubectl -n lab-08 get configmaps container-info-env
 
 ---
 
-NAME                 DATA      AGE
-container-info-env   1         59s
+NAME                 DATA   AGE
+container-info-env   1      30s
 ```
 
 ```
-kubectl describe configmap container-info-env -n lab-08
+kubectl -n lab-08 describe configmap container-info-env
 
 ---
 
-Name:		container-info-env
-Namespace:	lab-08
-Labels:		<none>
-Annotations:	<none>
+Name:         container-info-env
+Namespace:    lab-08
+Labels:       <none>
+Annotations:  <none>
 
 Data
 ====
 IMAGE_COLOR:
 ----
 green
-Events:	<none>
+
+BinaryData
+====
+
+Events:  <none>
 ```
 
 ## Task 2: Adding the configmap in the deployment.
 
-The deployment we create now looks a lot like the deployment we created in the 
-previous labs.
+The deployment we create now looks a lot like the deployment we created in the previous labs.
 
-```
+```yaml
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -91,7 +92,7 @@ spec:
         envFrom:
           - configMapRef:
               name: container-info-env
-```     
+```
 
 Copy the content above into a file `lab-08-deployment.yml`.
 
@@ -102,17 +103,17 @@ kubectl apply -f lab-08-deployment.yml -n lab-08
 
 ---
 
-deployment "container-info" created
+deployment.apps/container-info created
 ```
 
 We will expose the service again.
 
 ```
-kubectl expose deployment container-info --type=NodePort --name=container-info -n lab-08
+kubectl -n lab-08 expose deployment container-info --type=NodePort --name=container-info
 
 ---
 
-service "container-info" exposed
+service/container-info exposed
 ```
 
 And connect to the service in the browser.
@@ -123,19 +124,16 @@ minikube service container-info -n lab-08
 
 ## Task 3: Updating an existing configmap
 
-Configmaps make it possible to change configuration of a application (pod), 
-without needing to completely rebuild a container image.  Let's try this.
+Configmaps make it possible to change configuration of a application (pod), without needing to completely rebuild a container image.  Let's try this.
 
-Issue the following command, and replace the image color to `yellow` and save 
-the  file (you will get a `configmap "container-info-env" edited` message when 
-succesful):
+Issue the following command, and replace the image color to `yellow` and save the  file (you will get a `configmap/container-info-env edited` message when succesful):
 
 ```
-kubectl edit configmap container-info-env -n lab-08
+kubectl -n lab-08 edit configmaps container-info-env
 
 ---
 
-configmap "container-info-env" edited
+configmap/container-info-env edited
 ```
 
 Visit your application again to see if the color has indeed been changed:
@@ -144,10 +142,7 @@ Visit your application again to see if the color has indeed been changed:
 minikube service container-info -n lab-08
 ```
 
-You should notice that the color has NOT changed... Do not worry, this is 
-expected behaviour. Before we see the change we need to restart the pod, for ease 
-of use we  will do this by simply deleting the pod (Kubernetes we start a new 
-one automatically).
+You should notice that the color has NOT changed... Do not worry, this is expected behaviour. Before we see the change we need to restart the pod, for ease of use we  will do this by simply deleting the pod (Kubernetes we start a new one automatically).
 
 First list (and copy) the name of the pod:
 
@@ -156,27 +151,28 @@ kubectl get pods -n lab-08
 
 ---
 
-NAME                              READY     STATUS    RESTARTS   AGE
-container-info-84dc4f8678-bbcbp   1/1       Running   0          18m
+NAME                              READY   STATUS    RESTARTS   AGE
+container-info-5d7cdf6cc6-ddnxn   1/1     Running   0          5m
 ```
 
 Now delete that pod:
 
 ```
-kubectl delete pod container-info-84dc4f8678-bbcbp -n lab-08
+kubectl delete pods container-info-5d7cdf6cc6-ddnxn
 ```
 
-If you are quick enough you will we temporary see two pods, one starting/running 
+If you are quick enough you will we temporary see two pods, one starting/running
 and one terminating/running:
 
 ```
+kubectl get pods -n lab-08
+
 NAME                              READY     STATUS        RESTARTS   AGE
 container-info-84dc4f8678-2m9xm   1/1       Running       0          2s
-container-info-84dc4f8678-bbcbp   0/1       Terminating   0          20m
+container-info-5d7cdf6cc6-ddnxn   0/1       Terminating   0          5m
 ```
 
-Now visit your application again, this time you should see that the color has 
-changed to yellow:
+Now visit your application again, this time you should see that the color has changed to yellow:
 
 ```
 minikube service container-info -n lab-08
@@ -204,19 +200,17 @@ kubectl get secret -n lab-08
 
 ---
 
-NAME                    TYPE                                  DATA      AGE
-default-token-twfzc     kubernetes.io/service-account-token   3         8m
-lab-08-secret-literal   Opaque                                1         25s
+NAME                    TYPE     DATA   AGE
+lab-08-secret-literal   Opaque   1      10s
 ```
 
 ## Task 5: Creating a secret from a file
 
-The second option we have is creating the secret from a file. First of all 
-create the file we are going to use in the command.
+The second option we have is creating the secret from a file. First of all create the file we are going to use in the command.
 
 ```
 echo -n "N0T$oS3cREtP@SSw0rD" > ./password.txt
-```  
+```
 
 If this file is created we can use it to create the secret.
 
@@ -235,32 +229,29 @@ kubectl get secret -n lab-08
 
 ---
 
-NAME                    TYPE                                  DATA      AGE
-default-token-7sszf     kubernetes.io/service-account-token   3         4m
-lab-08-secret-file      Opaque                                1         17s
-lab-08-secret-literal   Opaque                                1         1m
+NAME                    TYPE     DATA   AGE
+lab-08-secret-file      Opaque   1      10s
+lab-08-secret-literal   Opaque   1      1m
 ```
 
 ## Task 6: Creating a secret from YAML
 
-Our last option we have is to create the secret directly from a yaml. This is 
-similar to how we create services, deployments,... and any other Kubernetes 
-objects we already created in these labs.  First we need to encrypt our 
-password.
+Our last option we have is to create the secret directly from a yaml. This is similar to how we create services, deployments,... and any other Kubernetes objects we already created in these labs.  First we need to encrypt our password.
 
-> NOTE: as you will see by default secrets are simply base64 encoded, so not 
+> NOTE: as you will see by default secrets are simply base64 encoded, so not
 > really very secret
 
 ```
 echo -n 'N0T$oS3cREtP@SSw0rD' | base64
 
- TjBUJG9TM2NSRXRQQFNTdzByRA==
+---
+
+TjBUJG9TM2NSRXRQQFNTdzByRA==
 ```
 
-This base64 encoded string we can you in the YAML file we will create.  Create 
-a file `lab-08-secret-yaml.yml` with the content below:
+This base64 encoded string we can you in the YAML file we will create.  Create a file `lab-08-secret-yaml.yml` with the content below:
 
-```
+```yaml
 apiVersion: v1
 kind: Secret
 metadata:
@@ -270,8 +261,7 @@ data:
   password: TjBUJG9TM2NSRXRQQFNTdzByRA==
 ```
 
-In this yaml file we specify the output we generated from the base64 encode. At
-this moment you are able to apply the yaml file and the secret will be created.
+In this yaml file we specify the output we generated from the base64 encode. At this moment you are able to apply the yaml file and the secret will be created.
 
 ```
 kubectl create -f ./lab-08-secret-yaml.yml -n lab-08
@@ -288,11 +278,10 @@ kubectl get secret -n lab-08
 
 ---
 
-NAME                    TYPE                                  DATA      AGE
-default-token-7sszf     kubernetes.io/service-account-token   3         11m
-lab-08-secret-file      Opaque                                1         6m
-lab-08-secret-literal   Opaque                                1         7m
-lab-08-secret-yaml      Opaque                                1         44s
+NAME                    TYPE     DATA   AGE
+lab-08-secret-file      Opaque   1      1m30s
+lab-08-secret-literal   Opaque   1      3m
+lab-08-secret-yaml      Opaque   1      10s
 ```
 
 ## Task 7: Checking the content of a secret
@@ -300,14 +289,31 @@ lab-08-secret-yaml      Opaque                                1         44s
 We can describe a secret just like any other object in Kubernetes.
 
 ```
-kubectl get secret lab-08-secret-yaml -o yaml -n lab-08
+kubectl -n lab-08 get secrets lab-08-secret-yaml -o yaml
+
+---
+
+apiVersion: v1
+data:
+  password: TjBUJG9TM2NSRXRQQFNTdzByRA==
+kind: Secret
+metadata:
+  creationTimestamp: "2023-12-11T10:50:18Z"
+  name: lab-08-secret-yaml
+  namespace: lab-08
+  resourceVersion: "4277"
+  uid: 9b656515-cd05-4dfe-8cc3-4764d3ad7441
+type: Opaque
 ```
 
-You will see the encoded password in the YAML. This can be decoded using the 
-following command.
+You will see the encoded password in the YAML. This can be decoded using the following command.
 
 ```
 echo 'TjBUJG9TM2NSRXRQQFNTdzByRA==' | base64 --decode
+
+---
+
+N0T$oS3cREtP@SSw0rD
 ```
 
 This will output : `N0T$oS3cREtP@SSw0rD`

@@ -12,7 +12,7 @@ In this lab we will look at the very basics of a Helm Chart.
 
 The most interesting parts of a Helm Chart are the templates directory and the values file.
 
-The templates directory contains yaml files that look a lot like the Kubernetes yaml files you already know. But using helm, these files follow the standard conventions for writing Go templates.
+The templates directory contains yaml files that look a lot like the Kubernetes manifest files you already know. But using helm, these files follow the standard conventions for writing Go templates.
 
 ```yaml
 apiVersion: v1

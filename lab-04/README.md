@@ -1,7 +1,6 @@
 # Lab 04 - Pods
 
-In this lab we will run our first, very basic, application on Kubernetes.  We
-will basically run a single pod as our application.
+In this lab we will run our first, very basic, application on Kubernetes.  We will basically run a single pod as our application.
 
 ## Task 1: Creating a namespace
 
@@ -9,10 +8,6 @@ Create a namespace for this lab:
 
 ```
 kubectl create ns lab-04
-
----
-
-namespace "lab-04" created
 ```
 
 Verify that your namespace was created:
@@ -22,11 +17,11 @@ kubectl get namespaces
 
 ---
 
-NAME             STATUS    AGE
-default          Active    1h
-kube-public      Active    1h
-kube-system      Active    1h
-lab-04           Active    7s
+default           Active   25m
+kube-node-lease   Active   25m
+kube-public       Active   25m
+kube-system       Active   25m
+lab-04            Active   30s
 ```
 
 ## Task 2: Starting your first pod
@@ -39,38 +34,31 @@ kubectl run --restart=Never --image=nginx  nginx -n lab-04
 
 ---
 
-pod "nginx" created
+pod/nginx created
 ```
 
-The above command will create a single pod that is based on the official nginx
-container image.  Run the following command to verify that the pod has been
-created and is in the running state (if the pod is not yet in the running state
-wait a couple of seconds and try to run the command again):
+The above command will create a single pod that is based on the official nginx container image.  Run the following command to verify that the pod has been created and is in the running state (if the pod is not yet in the running state wait a couple of seconds and try to run the command again):
 
 ```
 kubectl get pods -n lab-04
 
 ---
 
-NAME      READY     STATUS    RESTARTS   AGE
-nginx     1/1       Running   0          22s
+NAME    READY   STATUS    RESTARTS   AGE
+nginx   1/1     Running   0          30s
 ```
 
-As we have not yet configured any services and/or ingresses we will use a litte
-"hack" to access our pod we just created.
+As we have not yet configured any services and/or ingresses we will use a litte "hack" to access our pod we just created.
 
-Run the following command to forward the port of the pod (in our case port 80)
-running in our Kubernetes cluster to a port on your laptop (in this case port
-8080).
+Run the following command to forward the port of the pod (in our case port 80) running in our Kubernetes cluster to a port on your laptop (in this case port 8080).
 
 ```
-kubectl port-forward pod/nginx 8080:80 -n lab-04
+kubectl -n lab-04 port-forward pods/nginx 8080:80
 ```
 
 > NOTE: your prompt will be locked by the port-forward process
 
-Now go to your browser and surf to http://localhost:8080, you should be greeted
-with the default nginx welcome page:
+Now go to your browser and surf to http://localhost:8080, you should be greeted with the default nginx welcome page:
 
 ![nginx welcome page](images/lab-04-nginx-welcome-page.png)
 
@@ -78,20 +66,17 @@ If that works you can close the port-foward connection by pressing `CTRL+c`.
 
 ## Task 3: Connecting to your pod
 
-To connect to your pod, you can use the following command (notice how it
-resembles the `docker container exec` command in options and functionality):
+To connect to your pod, you can use the following command (notice how it resembles the `docker container exec` command in options and functionality):
 
 ```
-kubectl exec -ti nginx -n lab-04 -- bash
+kubectl -n lab-04 exec -it nginx -- bash
 
 ---
 
 root@nginx:/#
 ```
 
-Notice how the prompt changes.  `exec`-ing into a pod is very powerful for
-troubleshooting, but keep in mind that by default pods/containers are immutable
-so remember to not make any changes inside the pods/container.
+Notice how the prompt changes.  `exec`-ing into a pod is very powerful for troubleshooting, but keep in mind that by default pods/containers are immutable so remember to not make any changes inside the pods/container.
 
 To exit run the `exit` command.
 
@@ -101,12 +86,10 @@ exit
 
 ## Task 4: Pod logs
 
-Again similar to when working with Docker containers, Kubernetes has a built-in
-feature that exposes all stdout/stderr output into logs.  To access those logs
-issue the following command:
+Again similar to when working with Docker containers, Kubernetes has a built-in feature that exposes all stdout/stderr output into logs.  To access those logs issue the following command:
 
 ```
-kubectl logs nginx -n lab-04
+kubectl -n lab-04 logs nginx
 
 ---
 
@@ -116,57 +99,53 @@ kubectl logs nginx -n lab-04
 127.0.0.1 - - [11/Mar/2019:11:40:50 +0000] "GET / HTTP/1.1" 200 612 "-" "curl/7.52.1" "-"
 ```
 
-> NOTE: if your logs are empty, repeat Task 2 where you `kubectl port-forward` 
-> the container port and hit reload the page a couple more times in your 
+> NOTE: if your logs are empty, repeat Task 2 where you `kubectl port-forward`
+> the container port and hit reload the page a couple more times in your
 > browser
 
-A very handy option of `kubectl logs` is that you can follow them using the `-f`
-option, this is extremely useful when troubleshooting:
+A very handy option of `kubectl logs` is that you can follow them using the `-f` option, this is extremely useful when troubleshooting:
 
 ```
-kubectl logs nginx -n lab-04 -f
+kubectl -n lab-04 logs -f nginx
 ```
 
 Hit `CTRL+c` to exit the logs.
 
 ## Task 5: Getting pod details
 
-Like with most objects in Kubernetes you can use the `kubectl describe` command 
-to get more information about a specific pod, for example:
+Like with most objects in Kubernetes you can use the `kubectl describe` command to get more information about a specific pod, for example:
 
 ```
-kubectl describe pods nginx -n lab-04
+kubectl -n lab-04 describe pods nginx
 
 ---
 
-Name:         nginx
-Namespace:    lab-04
-Priority:     0
-Node:         minikube/10.0.2.15
-Start Time:   Thu, 29 Aug 2019 11:23:56 +0200
-Labels:       run=nginx
-Annotations:  <none>
-Status:       Running
-IP:           172.17.0.2
+Name:             nginx
+Namespace:        lab-04
+Priority:         0
+Service Account:  default
+Node:             minikube/192.168.59.102
+Start Time:       Mon, 11 Dec 2023 11:02:27 +0100
+Labels:           run=nginx
+Annotations:      <none>
+Status:           Running
+IP:               10.244.0.3
+IPs:
+  IP:  10.244.0.3
 Containers:
   nginx:
-    Container ID:   docker://185da953fb9332cdbaa3516f2240255a6fddc8538f58a277d2f826a469bd6f26
+    Container ID:   docker://a2ea2a4bddabf445f367483fdee934a58e6c68fe63b2f8535ed0cbd43c85eecb
     Image:          nginx
-    Image ID:       docker-pullable://nginx@sha256:aeded0f2a861747f43a01cf1018cf9efe2bdd02afd57d2b11fcc7fcadc16ccd1
+    Image ID:       docker-pullable://nginx@sha256:10d1f5b58f74683ad34eb29287e07dab1e90f10af243f151bb50aa5dbb4d62ee
     Port:           <none>
     Host Port:      <none>
     State:          Running
-      Started:      Thu, 26 Sep 2019 11:45:15 +0200
-    Last State:     Terminated
-      Reason:       Error
-      Exit Code:    255
-      Started:      Fri, 30 Aug 2019 14:46:25 +0200
-      Finished:     Thu, 26 Sep 2019 11:42:56 +0200
+      Started:      Mon, 11 Dec 2023 11:02:39 +0100
     Ready:          True
-    Restart Count:  2
+    Restart Count:  0
     Environment:    <none>
     Mounts:
-      /var/run/secrets/kubernetes.io/serviceaccount from default-token-4hztg (ro)
+      /var/run/secrets/kubernetes.io/serviceaccount from kube-api-access-b8x9d (ro)
 Conditions:
   Type              Status
   Initialized       True
@@ -174,22 +153,24 @@ Conditions:
   ContainersReady   True
   PodScheduled      True
 Volumes:
-  default-token-4hztg:
-    Type:        Secret (a volume populated by a Secret)
-    SecretName:  default-token-4hztg
-    Optional:    false
-QoS Class:       BestEffort
-Node-Selectors:  <none>
-Tolerations:     node.kubernetes.io/not-ready:NoExecute for 300s
-                 node.kubernetes.io/unreachable:NoExecute for 300s
+  kube-api-access-b8x9d:
+    Type:                    Projected (a volume that contains injected data from multiple sources)
+    TokenExpirationSeconds:  3607
+    ConfigMapName:           kube-root-ca.crt
+    ConfigMapOptional:       <nil>
+    DownwardAPI:             true
+QoS Class:                   BestEffort
+Node-Selectors:              <none>
+Tolerations:                 node.kubernetes.io/not-ready:NoExecute op=Exists for 300s
+                             node.kubernetes.io/unreachable:NoExecute op=Exists for 300s
 Events:
-  Type    Reason          Age   From               Message
-  ----    ------          ----  ----               -------
-  Normal  SandboxChanged  30m   kubelet, minikube  Pod sandbox changed, it will be killed and re-created.
-  Normal  Pulling         30m   kubelet, minikube  Pulling image "nginx"
-  Normal  Pulled          30m   kubelet, minikube  Successfully pulled image "nginx"
-  Normal  Created         30m   kubelet, minikube  Created container nginx
-  Normal  Started         30m   kubelet, minikube  Started container nginx
+  Type    Reason     Age    From               Message
+  ----    ------     ----   ----               -------
+  Normal  Scheduled  5m47s  default-scheduler  Successfully assigned lab-04/nginx to minikube
+  Normal  Pulling    5m46s  kubelet            Pulling image "nginx"
+  Normal  Pulled     5m35s  kubelet            Successfully pulled image "nginx" in 11.015474006s (11.015487658s including waiting)
+  Normal  Created    5m35s  kubelet            Created container nginx
+  Normal  Started    5m35s  kubelet            Started container nginx
 ```
 
 ## Task 6: Cleaning up
