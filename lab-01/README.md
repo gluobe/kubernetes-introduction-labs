@@ -45,7 +45,7 @@ kubectl get nodes
 ---
 
 NAME       STATUS   ROLES           AGE   VERSION
-minikube   Ready    control-plane   5m   v1.27.4
+minikube   Ready    control-plane   5m    v1.27.4
 ```
 
 > NOTE: if you do not see the `minikube` node you are most likely connected to the wrong cluster
