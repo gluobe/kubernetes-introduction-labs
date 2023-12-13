@@ -142,7 +142,7 @@ Visit your application again to see if the color has indeed been changed:
 minikube service container-info -n lab-08
 ```
 
-You should notice that the color has NOT changed... Do not worry, this is expected behaviour. Before we see the change we need to restart the pod, for ease of use we  will do this by simply deleting the pod (Kubernetes we start a new one automatically).
+You should notice that the color has NOT changed... Do not worry, this is expected behaviour. Before we see the change we need to restart the pod, for ease of use we will do this by simply deleting the pod (Kubernetes will start a new pod automatically).
 
 First list (and copy) the name of the pod:
 
