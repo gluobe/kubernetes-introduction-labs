@@ -158,7 +158,7 @@ container-info-5d7cdf6cc6-ddnxn   1/1     Running   0          5m
 Now delete that pod:
 
 ```
-kubectl delete pods container-info-5d7cdf6cc6-ddnxn
+kubectl -n lab-08 delete pods container-info-5d7cdf6cc6-ddnxn
 ```
 
 If you are quick enough you will we temporary see two pods, one starting/running
