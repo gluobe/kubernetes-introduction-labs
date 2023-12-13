@@ -55,7 +55,7 @@ pullPolicy: IfNotPresent
 
 Operators are software extensions to Kubernetes that make use of CRDs (Custom Resource Definitions) to manage applications and their components. These Operators can be compared to their human counterpart, a technician with deep knowlegde of the software and someone that knows how to deploy, maintain and fix it.
 
-Operators come in handy when dealing with complex software such as multi-node database setups. Some example automations that operators can privide are:
+Operators come in handy when dealing with complex software such as multi-node database setups. Some example automations that operators can provide are:
 - Deploying on demand
 - Taking and restoring backups
 - Handling upgrades
