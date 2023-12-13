@@ -216,7 +216,7 @@ Context "minikube" modified.
 ## Task 6: Deleting namespaces
 
 Deleting a namespace is very easy, keep in mind however that when you delete a
-namespace *all* the objects in that namespace will be deleten. So always verify
+namespace *all* the objects in that namespace will be deleted. So always verify
 that all the objects in that namespace can be deleted:
 
 ```
