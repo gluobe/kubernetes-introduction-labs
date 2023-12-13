@@ -14,8 +14,8 @@ kubectl get nodes
 
 ---
 
-NAME       STATUS   ROLES    AGE   VERSION
-minikube   Ready    master   77d   v1.27.4
+NAME       STATUS   ROLES           AGE   VERSION
+minikube   Ready    control-plane   5m    v1.27.4
 ```
 
 As we are using minikube we only have a single node.  Below is the output of a
